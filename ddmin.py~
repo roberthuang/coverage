@@ -1,0 +1,127 @@
+import sys,outputters
+from split import split
+from xml.parsers.xmlproc import xmlval,xmlproc
+from listsets import listminus
+
+PASS       = "PASS"
+FAIL       = "FAIL"
+UNRESOLVED = "UNRESOLVED"
+
+
+def ddmin(data, test):
+		if test(data) ==  FAIL:
+			subsets = split(data,2)
+			for subset in subsets:
+				if test(subset) == FAIL:
+					return ddmin(subset,test)
+	return tempfile()
+	
+  
+    
+    
+
+
+
+if __name__ == "__main__":
+	
+	tests = {}
+	warnings=1
+    	entstack=0
+    	rawxml=0
+	
+	
+    	fname = sys.argv[1]
+    	file1 = open(fname, 'r')
+    	data = file1.read()
+    	file1.close() 
+	
+	app = xmlproc.Application()
+    	p = xmlproc.XMLProcessor()  
+    	p.set_application(app)
+    	err=outputters.MyErrorHandler(p, p, warnings, entstack, rawxml)
+    	p.set_error_handler(err)
+
+
+
+
+
+
+	def getfile(s):
+		temp=open('temp.xml','w+')
+		 
+		temp.write(s)
+		temp.flush()
+		temp.close()
+		return temp.name
+
+	def tempfile():
+		temp=open('temp.xml','r')
+		data=temp.read()
+		temp.close()
+		return data
+
+	def test(c):
+		
+		global tests
+		s= ""
+		for char in c:
+            		s += char
+            	print '                  *********part of cut*********\n'
+    		print s
+    		print '\n'
+    		print '                  *****************************\n'
+
+        	if s in tests.keys():
+            		return tests[s]
+		
+		try:
+			p.set_data_after_wf_error(0)
+            		p.parse_resource(getfile(c))
+            		
+            		print PASS
+                	tests[s] = PASS
+                	return PASS
+			
+            	except SyntaxError:
+                	
+                	tests[s] = UNRESOLVED
+                	return UNRESOLVED
+		except UnboundLocalError:
+            		print FAIL   
+            		tests[s] = FAIL
+            		
+            		return FAIL
+		
+													
+	
+	failed = ddmin(data,test)
+	
+	out = "No failed input!"
+	for i in tests.values():
+		if i == FAIL:
+			out = failed
+			break
+	
+
+	print '                  ******The failed input******\n'
+    	print out
+    	print '\n'
+    	print '                  *****************************\n'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+   
